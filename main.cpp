@@ -10,10 +10,21 @@
 
 int main(int argc, const char * argv[]) {
     
+    std::cout << "Starting Program" << std::endl;
+    
     gameOfLife gol;
     
-    gol.gameProcess();
+    int gameMode;
+    bool randomSelected;
     
+    gameMode = gol.gameModeSelection();
+    
+    randomSelected = gol.importOrRandom();
+    
+    gol.setUpGame(gameMode, randomSelected);
+    
+    
+    std::cout << "\n\n\aProgram has finished running." << std::endl;
     
     return 0;
 }

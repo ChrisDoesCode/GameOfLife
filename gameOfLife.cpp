@@ -31,7 +31,7 @@ int gameOfLife::gameModeSelection (){
     string gameModeName;
     
     cout << "WELCOME TO THE GAME OF LIFE!\nWhich game mode would you like to play?\n";
-    cout << "\t>> 1) Classic\n\t>> 2) Doughnut\n\t>> 3) Mirrored";
+    cout << "\t 1) Classic\n\t 2) Doughnut\n\t 3) Mirrored" << endl;
     do {
         cout << "\nSelect (1,2,3)?: ";
         cin >> gameMode;
@@ -56,26 +56,29 @@ int gameOfLife::gameModeSelection (){
 #pragma mark Import File or Random
 //====================================================================================
 //Func to select Random or Input
-int gameOfLife::importOrRandom (){
-    int randomSelected;
+bool gameOfLife::importOrRandom (){
+    int selection;
+    bool isRandom;
     string randomSelectedName;
     
     cout << "Would you like to create the Game Map by:";
-    cout << "\n\t>> 0) Inputting a .txt file yourself using the name\n\t>> 1) Generating a Random Game Map";
+    cout << "\n\t 0) Inputting a .txt file yourself using the name\n\t 1) Generating a Random Game Map" << endl;
     do {
         cout << "\nSelect (0,1)?: ";
-        cin >> randomSelected;
-    }while ((randomSelected != 0) && (randomSelected != 1));
+        cin >> selection;
+    }while ((selection != 0) && (selection != 1));
     
-    if (randomSelected == 0)
+    if (selection == 0){
         randomSelectedName = "input a .txt source file.";
-    else if (randomSelected == 1)
-        randomSelectedName = "Generate an Random Game Map.";
+        isRandom = false;
+    }
+    else if (selection == 1){
+        randomSelectedName = "Generate an Random Game Map. ";
+        isRandom = true;
+    }
+    cout << "\n\nYou have selected to " << randomSelectedName << endl;
     
-    
-    cout << "\n\nYou have selected to " << randomSelectedName;
-    
-    return randomSelected;
+    return isRandom;
 }
 //====================================================================================
 #pragma mark
@@ -87,7 +90,7 @@ int gameOfLife::reportStyleSelection (){
     string reportSelectedName;
     
     cout << "\n\nOne Last Thing before we play...\nHow would you like to report the generation changes?:";
-    cout << "\n\t>> 1) Progress generations by pressing ENTER\n\t>> 2) Outputting to a .txt file\n\t>> 3) Wait for a slight pause before continuing";
+    cout << "\n\t 1) Progress generations by pressing ENTER\n\t 2) Outputting to a .txt file\n\t 3) Wait for a slight pause before continuing" << endl;
     do {
         cout << "\nSelect (1,2,3)?: ";
         cin >> reportSelection;
@@ -110,25 +113,25 @@ int gameOfLife::reportStyleSelection (){
 #pragma mark
 #pragma mark Initial Map Creation -- INPUT FILE
 //====================================================================================
-int* gameOfLife::inputMapCreation (int height, int width, int fillSelection, int* dataInput){
-    int Y = height + 2;
-    int X = width + 2;
-    int sizeOfFile = height * width;
+int* gameOfLife::mapFromInput (int height, int width, int fillSelection, int* dataInput){
+    int Y(height + 2);
+    int X(width + 2);
+    int sizeOfFile(height * width);
     int* dataFromFile = new int[sizeOfFile];
-    int size = X;
-    for (int i = 0; i < sizeOfFile; ++i){
+    int size(X);
+    for (int i(0); i < sizeOfFile; ++i){
         dataFromFile[i] = (dataInput)[i];
 //        cout << dataFromFile[i];
     }
     delete [] dataInput;
     
-    int sizeOfData = X * Y;
+    int sizeOfData(X * Y);
     int *listOfData = new int[sizeOfData];
     
     //Copy the file data into a contained Box (+2's)
-    int location = 0;
-    for (int j = 0; j < Y; ++j){
-        for (int k = 0; k < X; ++k){
+    int location(0);
+    for (int j(0); j < Y; ++j){
+        for (int k(0); k < X; ++k){
             if ((j == 0) || (k == 0) || (j == (Y-1)) || (k == (X-1))){
                 listOfData[(j*size)+k] = 0;
             }
@@ -149,12 +152,10 @@ int* gameOfLife::inputMapCreation (int height, int width, int fillSelection, int
 #pragma mark Initial Map Creation -- RANDOM
 //====================================================================================
 //Func to create map
-int* gameOfLife::mapCreation (int height, int width, int fillSelection, int randomSelected){
-    int random = randomSelected;
-    string txtFileName;
+int* gameOfLife::mapFromRandom (int height, int width, int fillSelection){
     //Create 2 Extra to Put array inside a box to allow for mode calculations
-    int X = width + 2;
-    int Y = height + 2;
+    int X(width + 2);
+    int Y(height + 2);
     string inputData = "";
     //Create 1D Array of Data
 
@@ -162,22 +163,16 @@ int* gameOfLife::mapCreation (int height, int width, int fillSelection, int rand
 
     srand(time(NULL));
     
-    //If Random Selected -- Map should be filled randomly
-    if (random == 1){
-        int sizeOfData = X * Y;
-        int *listOfData = new int[sizeOfData];
-        int fillOrNaw = 0;
-        for (int i = 0; i <= sizeOfData; ++i){
-            fillOrNaw = rand() % 2;
-            listOfData[i] = fillOrNaw;
-        }
-        return listOfData;
+    int sizeOfData(X * Y);
+    int *listOfData = new int[sizeOfData];
+    int fillOrNaw(0);
+    for (int i(0); i <= sizeOfData; ++i){
+        fillOrNaw = rand() % 2;
+        listOfData[i] = fillOrNaw;
     }
     
-    
-    
-    return 0;
-    
+    return listOfData;
+
 }
 //====================================================================================
 #pragma mark
@@ -185,8 +180,8 @@ int* gameOfLife::mapCreation (int height, int width, int fillSelection, int rand
 //====================================================================================
 void gameOfLife::runSimulations (int height, int width, int* originalMap, int gameMode, int reportStyle){
     //Give a border to allow for calculating the gameModes
-    int X = width + 2;
-    int Y = height + 2;
+    int X(width + 2);
+    int Y(height + 2);
     
     //Create file to output to
     ofstream outputFile;
@@ -198,22 +193,21 @@ void gameOfLife::runSimulations (int height, int width, int* originalMap, int ga
     //Create two maps, a 2D map and neighbors
     int* firstMapData = new int[sizeOfData];
     
-    for (int i = 0; i < sizeOfData; ++i)
+    for (int i(0); i < sizeOfData; ++i)
         firstMapData[i] = (originalMap)[i];
     
-    delete [] originalMap;
+    
     int* secondMapData = new int[sizeOfData];
     
-    for (int i = 0; i < sizeOfData; ++i)
+    for (int i(0); i < sizeOfData; ++i)
         secondMapData[i] = firstMapData[i];
     
-    int neighbors = 0;
-    int replicaCount = 0;
-    int genNum = 0;
+    int neighbors(0);
+    int replicaCount(0);
+    int genNum(0);
     
-    int infiniteTracker = 0;
-    int infiniteCounter = 0;
-    int infiniteReplicaCount = 0;
+    int infiniteTracker(0);
+    int infiniteCounter(0);
     int* infiniteArray = new int[sizeOfData];
     
     //Assess Original Map and Copy it to New Map Array based on gameMode
@@ -225,8 +219,8 @@ void gameOfLife::runSimulations (int height, int width, int* originalMap, int ga
     cout << "-----------------------\nInitial Map Configuration" << "\n-----------------------\n";
     if (reportStyle == 2)
     outputFile << "-----------------------\nInitial Map Configuration" << "\n-----------------------\n";
-    for (int j = 0; j < Y; ++j){
-        for (int k = 0; k < X; ++k){
+    for (int j(0); j < Y; ++j){
+        for (int k(0); k < X; ++k){
             if ((j != 0) && (k != 0) && (j != (Y-1)) && (k != (X-1))){
                 if (firstMapData[(j * size) + k] == 1){
                     cout << "X ";
@@ -249,7 +243,7 @@ void gameOfLife::runSimulations (int height, int width, int* originalMap, int ga
     while (true){
         //Keep track of infinites and end if occurrs
         if (infiniteCounter == 2){
-            for (int i = 0; i < sizeOfData; ++i){
+            for (int i(0); i < sizeOfData; ++i){
                 if (secondMapData[i] == infiniteArray[i])
                 ++infiniteTracker;
             }
@@ -263,7 +257,7 @@ void gameOfLife::runSimulations (int height, int width, int* originalMap, int ga
             infiniteCounter = 0;
         }
         if (infiniteCounter == 0){
-            for (int i = 0; i < sizeOfData; ++i)
+            for (int i(0); i < sizeOfData; ++i)
             infiniteArray[i] = secondMapData[i];
         }
         
@@ -272,8 +266,8 @@ void gameOfLife::runSimulations (int height, int width, int* originalMap, int ga
         if (reportStyle == 2)
             outputFile << "-----------------------\n\tGeneration " << genNum << "\n-----------------------\n";
         if (gameMode == 1){
-            for (int j = 0; j < Y; ++j){
-                for (int k = 0; k < X; ++k){
+            for (int j(0); j < Y; ++j){
+                for (int k(0); k < X; ++k){
                     if ((j == 0) || (k == 0) || (j == (Y-1)) || (k == (X-1)))
                         secondMapData[(j*size) + k] = 0;
                     
@@ -299,8 +293,8 @@ void gameOfLife::runSimulations (int height, int width, int* originalMap, int ga
         
         //Doughnut
         if (gameMode == 2){
-            for (int j = 0; j < Y; ++j){
-                for (int k = 0; k < X; ++k){
+            for (int j(0); j < Y; ++j){
+                for (int k(0); k < X; ++k){
                     if ((j == 0) || (k == 0) || (j == (Y-1)) || (k == (X-1)))
                         secondMapData[(j*size) + k] = 0;
                     
@@ -358,8 +352,8 @@ void gameOfLife::runSimulations (int height, int width, int* originalMap, int ga
         
         //Mirrored
         if (gameMode == 3){
-            for (int j = 0; j < Y; ++j){
-                for (int k = 0; k < X; ++k){
+            for (int j(0); j < Y; ++j){
+                for (int k(0); k < X; ++k){
                     if ((j == 0) || (k == 0) || (j == (Y-1)) || (k == (X-1)))
                         secondMapData[(j*size) + k] = 0;
                     
@@ -421,8 +415,8 @@ void gameOfLife::runSimulations (int height, int width, int* originalMap, int ga
         
         //Print out generated second map
         
-        for (int j = 0; j < Y; ++j){
-            for (int k = 0; k < X; ++k){
+        for (int j(0); j < Y; ++j){
+            for (int k(0); k < X; ++k){
                 if ((j != 0) && (k != 0) && (j != (Y-1)) && (k != (X-1))){
                     if (secondMapData[(j * size) + k] == 1){
                         cout << "X ";
@@ -444,15 +438,16 @@ void gameOfLife::runSimulations (int height, int width, int* originalMap, int ga
         
         
         //Check to see if maps are duplicates of each other for game ending
-        for (int i = 0; i < sizeOfData; ++i){
+        for (int i(0); i < sizeOfData; ++i){
             if (firstMapData[i] == secondMapData[i])
                 ++replicaCount;
         }
         
         if (replicaCount == sizeOfData){
-            cout << "-----------------------\n\tGame Has Ended!" << "\n-----------------------\n";
+            string gameOver{"-----------------------\n\tGame Has Ended!\n-----------------------\n"};
+            cout << gameOver;
             if (reportStyle == 2)
-                outputFile << "-----------------------\n\tGame Has Ended!" << "\n-----------------------\n";
+                outputFile << gameOver;
             break;
         }
         replicaCount = 0;
@@ -466,12 +461,19 @@ void gameOfLife::runSimulations (int height, int width, int* originalMap, int ga
         }
         
             
-        for (int i = 0; i < sizeOfData; ++i)
+        for (int i(0); i < sizeOfData; ++i)
             firstMapData[i] = secondMapData[i];
         ++genNum;
         ++infiniteCounter;
     }
+    //This deletion is necessary to prevent memleak from mapCreation funcs
+    delete[] originalMap;
+
+    delete[] firstMapData;
+    delete[] secondMapData;
+    delete[] infiniteArray;
     outputFile.close();
+    gameOfLife::~gameOfLife();
     
 }
 //====================================================================================
@@ -479,24 +481,18 @@ void gameOfLife::runSimulations (int height, int width, int* originalMap, int ga
 #pragma mark Game Execution
 //====================================================================================
 //Flow of the Game Itself
-void gameOfLife::gameProcess (){
-    int mapHeight = 0;
-    int mapWidth = 0;
+void gameOfLife::setUpGame (int gameMode, bool randomSelected){
+    int mapHeight(0);
+    int mapWidth(0);
+    int reportStyle(0);
     char answer;
-    int gameMode;
-    int reportStyle;
-    int randomSelected;
-    int fillSelection = 1;
+    int fillSelection(1);
     string txtFileName;
     
     
     
-    gameMode = gameModeSelection();
-    
-    randomSelected = importOrRandom();
-    
     //User wants a random map. DO IT
-    if (randomSelected == 1){
+    if (randomSelected){
         
         do {
             cout << "Please enter desired dimensions of game board.\nHeight?: ";
@@ -512,20 +508,20 @@ void gameOfLife::gameProcess (){
         }while ((answer != 'y') && (answer != 'Y'));
         
         reportStyle = reportStyleSelection();
-        
-        runSimulations(mapHeight, mapWidth, mapCreation(mapHeight, mapWidth, fillSelection, randomSelected), gameMode, reportStyle);
+
+        runSimulations(mapHeight, mapWidth, mapFromRandom(mapHeight, mapWidth, fillSelection), gameMode, reportStyle);
     }
     
     //User wants to input a file. DO IT
-    else if (randomSelected == 0){
+    else if (!randomSelected){
         
         cout << "\nPlease type the name of the .txt file including .txt at the end of file name\nPress ENTER when finished:  ";
         cin >> txtFileName;
         ifstream inputFile(txtFileName, ios::in);
-        string heightString = "";
-        string widthString = "";
-        string dataString = "";
-        int getWidth = 0;
+        string heightString{""};
+        string widthString{""};
+        string dataString{""};
+        int getWidth(0);
         
         
         //Iterate through lines and chars to see what we got
@@ -533,7 +529,7 @@ void gameOfLife::gameProcess (){
         for(string line; getline(inputFile, line); )
         {
             
-            for (int i = 0; i < line.length(); ++i)
+            for (int i(0); i < line.length(); ++i)
             {
                 if ((line[i] == ('0')) || (line[i] == '1') ||(line[i] == '2') ||(line[i] == '3') ||(line[i] == '4') ||(line[i] == '5') ||(line[i] == '6') ||(line[i] == '7') ||(line[i] == '8') ||(line[i] == '9')){
                     
@@ -564,7 +560,7 @@ void gameOfLife::gameProcess (){
         mapHeight = stoi(heightString);
         int sizeOfData = mapHeight * mapWidth;
         int *listOfData = new int[sizeOfData];
-        for (int i = 0; i < dataString.length(); ++i){
+        for (int i(0); i < dataString.length(); ++i){
             if (dataString[i] == 'X'){
             listOfData[i] = 1;
 //            cout << "X";
@@ -576,10 +572,9 @@ void gameOfLife::gameProcess (){
         }
         
         reportStyle = reportStyleSelection();
-        
-        runSimulations(mapHeight, mapWidth, inputMapCreation(mapHeight, mapWidth, reportStyle, listOfData), gameMode, reportStyle);
+
+        runSimulations(mapHeight, mapWidth, mapFromInput(mapHeight, mapWidth, reportStyle, listOfData), gameMode, reportStyle);
     }
-    
     
 }
 

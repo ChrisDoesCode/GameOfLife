@@ -17,13 +17,18 @@ class gameOfLife{
     
 public:
     
+    gameOfLife(){
+    }
     
-    void gameProcess();
+    ~gameOfLife(){
+    }
+    
+    void setUpGame(int gameMode, bool randomSelected);
     int gameModeSelection();
-    int importOrRandom();
+    bool importOrRandom();
     int reportStyleSelection();
-    int* mapCreation (int height, int width, int fillSelection, int randomSelected);
-    int* inputMapCreation (int height, int width, int fillSelection, int* dataInput);
+    int* mapFromRandom (int height, int width, int fillSelection);
+    int* mapFromInput (int height, int width, int fillSelection, int* dataInput);
     void runSimulations (int height, int width, int* originalMap, int gameMode, int reportStyle);
     
     
